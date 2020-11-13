@@ -66,7 +66,8 @@ class sudoku():
         self.bkup_stack.append(self.sudoku_array[:])
         print("copied dataset to bkup_stack") if self.verbose == 1 else None
         
-        index_value = next(self.sudoku_array.index(x) for x in self.sudoku_array if len(x) > 1)
+        # index_value = next(self.sudoku_array.index(x) for x in self.sudoku_array if len(x) > 1)
+        index_value = next(self.sudoku_array.index(x) for x in sorted(self.sudoku_array, key=len) if len(x) > 1)
         self.sudoku_array[index_value] = [self.sudoku_array[index_value][0]]
         self.index_value_stack.append(index_value)
         
@@ -125,6 +126,7 @@ class sudoku():
             fc_s = self.filled_cnt()
             print("filled cells at start: ",self.filled_cnt()) if self.verbose == 1 else None
             for i in range(81):
+                # naked singles
                 if len(self.sudoku_array[i]) > 1:
                     self.sudoku_array[i] = [x for x in self.sudoku_array[i] if x not in self.row_excl[i//9]] # row condition
                 if len(self.sudoku_array[i]) > 1:
