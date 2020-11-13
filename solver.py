@@ -102,6 +102,53 @@ class sudoku():
         error_flag_duplicate_list = 0
         error_flag_zero_list = 0
 
+        def naked_single():
+            for i in range(81):
+                if len(self.sudoku_array[i]) > 1:
+                    self.sudoku_array[i] = [x for x in self.sudoku_array[i] if x not in self.row_excl[i//9]] # row condition
+                if len(self.sudoku_array[i]) > 1:
+                    self.sudoku_array[i] = [x for x in self.sudoku_array[i] if x not in self.col_excl[i%9]] # col condition
+                if len(self.sudoku_array[i]) > 1:
+                    self.sudoku_array[i] = [x for x in self.sudoku_array[i] if x not in self.box_excl[((i//3)//9)*3 + ((i//3)%3)]]  # box condition
+            self.row_excl_update()
+            self.col_excl_update()
+            self.box_excl_update()
+        
+        def hidden_single():
+            for i in range(81):
+                # row checks
+                k = i//9
+                rest = []
+                if len(self.sudoku_array[i]) > 1:
+                    for j in range(k*9, (k*9)+9):
+                        if((i!=j)) : rest = np.append(rest, self.sudoku_array[j])
+                    if len(np.setdiff1d(self.sudoku_array[i], rest)) == 1:
+                        self.sudoku_array[i] = [np.setdiff1d(self.sudoku_array[i], rest)[0]]
+                
+                # column checks
+                k = i//9
+                rest = []
+                if len(self.sudoku_array[i]) > 1:
+                    for j in range(k, 81, 9):
+                        if((i!=j)) : rest = np.append(rest, self.sudoku_array[j])
+                    if len(np.setdiff1d(self.sudoku_array[i], rest)) == 1:
+                        self.sudoku_array[i] = [np.setdiff1d(self.sudoku_array[i], rest)[0]]
+                
+                # box checks
+                rest = []
+                if len(self.sudoku_array[i]) > 1:
+                    for j in range((((i%9)//3)*3)+(((i//9)//3)*27),(((i%9)//3)*3)+(((i//9)//3)*27)+3):
+                        if((i!=j)) : rest = np.append(rest, self.sudoku_array[j])
+                    for j in range((((i%9)//3)*3)+(((i//9)//3)*27)+9,(((i%9)//3)*3)+(((i//9)//3)*27)+12):
+                        if((i!=j)) : rest = np.append(rest, self.sudoku_array[j])
+                    for j in range((((i%9)//3)*3)+(((i//9)//3)*27)+18,(((i%9)//3)*3)+(((i//9)//3)*27)+21):
+                        if((i!=j)) : rest = np.append(rest, self.sudoku_array[j])
+                    if len(np.setdiff1d(self.sudoku_array[i], rest)) == 1:
+                        self.sudoku_array[i] = [np.setdiff1d(self.sudoku_array[i], rest)[0]]
+            self.row_excl_update()
+            self.col_excl_update()
+            self.box_excl_update()
+            
         def issue_check():
             nonlocal error_flag_duplicate_list
             nonlocal error_flag_zero_list
@@ -125,18 +172,9 @@ class sudoku():
         while (fc_s < fc_e):
             fc_s = self.filled_cnt()
             print("filled cells at start: ",self.filled_cnt()) if self.verbose == 1 else None
-            for i in range(81):
-                # naked singles
-                if len(self.sudoku_array[i]) > 1:
-                    self.sudoku_array[i] = [x for x in self.sudoku_array[i] if x not in self.row_excl[i//9]] # row condition
-                if len(self.sudoku_array[i]) > 1:
-                    self.sudoku_array[i] = [x for x in self.sudoku_array[i] if x not in self.col_excl[i%9]] # col condition
-                if len(self.sudoku_array[i]) > 1:
-                    self.sudoku_array[i] = [x for x in self.sudoku_array[i] if x not in self.box_excl[((i//3)//9)*3 + ((i//3)%3)]]  # box condition
+            naked_single()
+            hidden_single()
             print("filled cells at end: ",self.filled_cnt()) if self.verbose == 1 else None
-            self.row_excl_update()
-            self.col_excl_update()
-            self.box_excl_update()
             issue_check()
             fc_e = self.filled_cnt()
             if (error_flag_duplicate_list + error_flag_zero_list) > 0:
