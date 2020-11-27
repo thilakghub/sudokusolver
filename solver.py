@@ -18,7 +18,9 @@ class sudoku():
             self.sudoku_array.append([1, 2, 3, 4, 5, 6, 7, 8, 9])
     
     def print_sudoku(self):
-        sudoku_pd = pd.DataFrame(columns = ('a','b','c','d','e','f','g','h','i')) 
+#         for i in range(81):
+#             print(self.sudoku_array[i])
+        sudoku_pd = pd.DataFrame(columns = ('a','b','c','d','e','f','g','h','i'))
         for i in range(9):
             sudoku_pd = sudoku_pd.append({"a":self.sudoku_array[(i*9)+0],
                                           "b":self.sudoku_array[(i*9)+1],
@@ -188,8 +190,10 @@ class sudoku():
         self.update_array()
         if self.filled_cnt_val == 81:
             self.print_sudoku()
+            return(1)
         elif self.exit_flag == 1:
             print("unable to solve. check if initial values are right")
-            sys.exit(0)
+            return(0)
+            # sys.exit(0)
         else:
             self.solve()
